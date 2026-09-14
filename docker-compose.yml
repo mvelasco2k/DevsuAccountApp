@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      # - SA_PASSWORD=xxxx
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Your_strong!Passw0rd", "-Q", "select 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  microservice_clients:
+    build:
+      context: .
+      dockerfile: Microservice.Clients/Dockerfile
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MicroservicesDb;User Id=sa;Password=Your_strong!Passw0rd;
+    ports:
+      - "6001:80"
+
+  microservice_accounts:
+    build:
+      context: .
+      dockerfile: Microservice.Accounts/Dockerfile
+    depends_on:
+      - sqlserver
+      - microservice_clients
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=MicroservicesDb;User Id=sa;Password=Your_strong!Passw0rd;
+    ports:
+      - "6002:80"
