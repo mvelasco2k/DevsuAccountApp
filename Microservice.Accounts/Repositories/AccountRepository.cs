@@ -3,6 +3,7 @@ using Microservice.Accounts.Data;
 using Microservice.Accounts.Entities;
 using Microservice.Accounts.Exceptions;
 using Microservice.Accounts.Models.Dto;
+using Microservice.Accounts.Constants;
 
 namespace Microservice.Accounts.Repositories
 {
@@ -27,31 +28,25 @@ namespace Microservice.Accounts.Repositories
             return await query.OrderBy(m => m.Fecha).ToListAsync();
         }
 
-        
-
         public async Task<Movimiento> CreateMovimientoAsync(Movimiento movimiento)
         {
-            // validate account
             var cuenta = await _db.Cuentas.FirstOrDefaultAsync(c => c.CuentaId == movimiento.CuentaId);
             if (cuenta == null) throw new KeyNotFoundException("Cuenta no encontrada");
 
-            // determine tipo if not provided
-            if (string.IsNullOrWhiteSpace(movimiento.TipoMovimiento))
+            if (movimiento.Valor == 0)
             {
-                movimiento.TipoMovimiento = movimiento.Valor >= 0 ? "CREDITO" : "DEBITO";
+                throw new ArgumentException("Ingrese un valor diferente de 0");
             }
 
-            // compute current balance based on initial saldo plus existing movements
-            var movimientosSum = await _db.Movimientos.Where(m => m.CuentaId == cuenta.CuentaId).SumAsync(m => (decimal?)m.Valor) ?? 0m;
-            var currentBalance = cuenta.SaldoInicial + movimientosSum;
+            movimiento.TipoMovimiento = DetermineTransactionType(movimiento.Valor);
 
-            // apply movement: ensure sufficient balance for debits
+            var currentBalance = await GetCurrentBalanceAsync(cuenta.CuentaId, cuenta.SaldoInicial);
+
             if (movimiento.Valor < 0 && currentBalance + movimiento.Valor < 0)
             {
-                throw new InsufficientFundsException("Saldo no disponible");
+                throw new InsufficientValueException("Saldo no disponible");
             }
 
-            // set movement saldo after applying (do not modify cuenta.SaldoInicial)
             movimiento.Saldo = currentBalance + movimiento.Valor;
             movimiento.Fecha = DateTime.UtcNow;
 
@@ -59,6 +54,17 @@ namespace Microservice.Accounts.Repositories
 
             await _db.SaveChangesAsync();
             return movimiento;
+        }
+
+        private static string DetermineTransactionType(decimal valor)
+        {
+            return valor > 0 ? TransactionTypes.DEPOSITO : TransactionTypes.RETIRO;
+        }
+
+        private async Task<decimal> GetCurrentBalanceAsync(int cuentaId, decimal saldoInicial)
+        {
+            var movimientosSum = await _db.Movimientos.Where(m => m.CuentaId == cuentaId).SumAsync(m => (decimal?)m.Valor) ?? 0m;
+            return saldoInicial + movimientosSum;
         }
 
         public async Task<Cuenta?> GetCuentaByIdAsync(int id)

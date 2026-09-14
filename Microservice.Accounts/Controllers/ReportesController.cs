@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microservice.Accounts.Repositories;
 using Microservice.Accounts.Entities;
 using Microservice.Accounts.Models.Dto;
+using Microservice.Clients.Repositories;
 using System.Linq;
 
 namespace Microservice.Accounts.Controllers
@@ -10,15 +11,16 @@ namespace Microservice.Accounts.Controllers
     [Route("/[controller]")]
     public class ReportesController : ControllerBase
     {
-        private readonly IAccountRepository _repo;
+        private readonly IAccountRepository _accountRepo;
+        private readonly IClienteRepository _clientRepo;
 
-        public ReportesController(IAccountRepository repo)
+        public ReportesController(IAccountRepository accountRepo, IClienteRepository clientRepo)
         {
-            _repo = repo;
+            _accountRepo = accountRepo;
+            _clientRepo = clientRepo;
         }
 
-        // GET /reportes?fecha=2023-01-01,2023-01-31&cliente=123
-        [HttpGet]
+        [HttpGet("estado-cuenta")]
         public async Task<IActionResult> EstadoCuenta([FromQuery] string fecha, [FromQuery] int cliente)
         {
             DateTime? start = null, end = null;
@@ -32,11 +34,30 @@ namespace Microservice.Accounts.Controllers
                 }
             }
 
-            var cuentas = await _repo.GetCuentasByClienteAsync(cliente, start, end);
+            var clienteInfo = await _clientRepo.GetByIdAsync(cliente);
+            var cuentas = await _accountRepo.GetCuentasByClienteAsync(cliente, start, end);
 
-            var result = cuentas.Select(c => new TransaccionDto { cuenta = c, movimientos = (c.Movimientos != null ? c.Movimientos.ToList() : new List<Movimiento>()) }).ToList();
+            var cuentasDto = cuentas.Select(c => new CuentaDto
+            {
+                TipoCuenta = c.TipoCuenta,
+                NumeroCuenta = c.NumeroCuenta,
+                Movimientos = (c.Movimientos != null ? c.Movimientos.Select(m => new MovimientoDto
+                {
+                    Valor = m.Valor,
+                    Saldo = m.Saldo,
+                    TipoMovimiento = m.TipoMovimiento,
+                    Fecha = m.Fecha
+                }).ToList() : new List<MovimientoDto>()),
+                SaldoActual = (c.Movimientos != null && c.Movimientos.Any() ? c.Movimientos.OrderBy(m => m.Fecha).Last().Saldo : c.SaldoInicial)
+            }).ToList();
 
-            return Ok(new { cliente, fecha = fecha, cuentas = result });
+            var transaccion = new TransaccionDto
+            {
+                NombreCliente = clienteInfo?.Persona?.Nombre ?? string.Empty,
+                Cuentas = cuentasDto
+            };
+
+            return Ok(new {cuentas = transaccion });
         }
     }
 }

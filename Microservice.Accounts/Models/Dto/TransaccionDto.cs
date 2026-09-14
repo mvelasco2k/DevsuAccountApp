@@ -4,7 +4,7 @@ namespace Microservice.Accounts.Models.Dto
 {
     public class TransaccionDto
     {
-        public List<Movimiento> movimientos { get; set; }
-        public Cuenta cuenta { get; set; }
+        public string NombreCliente { get; set; }
+        public List<CuentaDto> Cuentas { get; set; }
     }
 }

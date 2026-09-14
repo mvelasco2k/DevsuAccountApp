@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microservice.Accounts.Entities;
 using Microservice.Accounts.Repositories;
+using Microservice.Accounts.Exceptions;
 
 namespace Microservice.Accounts.Controllers
 {
@@ -27,9 +28,13 @@ namespace Microservice.Accounts.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (Microservice.Accounts.Exceptions.InsufficientFundsException)
+            catch (InsufficientValueException)
             {
                 return BadRequest(new { message = "Saldo no disponible" });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 
