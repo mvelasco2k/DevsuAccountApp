@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Clients", "Mic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Accounts", "Microservice.Accounts\Microservice.Accounts.csproj", "{8B7D1124-50CD-474F-BFF1-4EB22CA1E4AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservice.Clients.Tests", "Microservice.Clients.Tests\Microservice.Clients.Tests.csproj", "{633865AF-D28E-4F5C-8883-BF41B8475759}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{8B7D1124-50CD-474F-BFF1-4EB22CA1E4AC}.Release|x64.Build.0 = Release|Any CPU
 		{8B7D1124-50CD-474F-BFF1-4EB22CA1E4AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{8B7D1124-50CD-474F-BFF1-4EB22CA1E4AC}.Release|x86.Build.0 = Release|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Debug|x64.Build.0 = Debug|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Debug|x86.Build.0 = Debug|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Release|x64.ActiveCfg = Release|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Release|x64.Build.0 = Release|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Release|x86.ActiveCfg = Release|Any CPU
+		{633865AF-D28E-4F5C-8883-BF41B8475759}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

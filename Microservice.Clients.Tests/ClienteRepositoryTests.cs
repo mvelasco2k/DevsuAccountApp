@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microservice.Clients.Data;
 using Microservice.Clients.Entities;
@@ -19,14 +20,26 @@ namespace Microservice.Clients.Tests
             await using var db = new AppDbContext(options);
             var repo = new ClienteRepository(db);
 
-            var cliente = new Cliente { Nombre = "Juan", Email = "juan@example.com", Persona = new Persona { Cedula = "123" } };
+            var cliente = new Cliente
+            {
+                Contrasena = "pwd123",
+                Estado = true,
+                Persona = new Persona
+                {
+                    Nombre = "Juan",
+                    Identificacion = "123",
+                    Direccion = "Calle 1",
+                    Telefono = "099999999"
+                }
+            };
+
             var created = await repo.CreateAsync(cliente);
 
-            var fetched = await repo.GetByIdAsync(created.Id);
+            var fetched = await repo.GetByIdAsync(created.ClienteId);
 
             Assert.NotNull(fetched);
-            Assert.Equal("Juan", fetched!.Nombre);
-            Assert.Equal("123", fetched.Persona!.Cedula);
+            Assert.Equal("pwd123", fetched!.Contrasena);
+            Assert.Equal("123", fetched.Persona!.Identificacion);
         }
     }
 }
