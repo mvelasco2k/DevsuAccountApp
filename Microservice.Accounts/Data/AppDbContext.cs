@@ -41,11 +41,6 @@ namespace Microservice.Accounts.Data
                 eb.Property(m => m.Saldo).HasColumnType("decimal(18,2)");
                 eb.Property(m => m.TipoMovimiento).HasMaxLength(50).IsRequired(false);
                 eb.Property(m => m.Fecha).IsRequired();
-
-                eb.HasOne(m => m.Cuenta)
-                    .WithMany(c => c.Movimientos)
-                    .HasForeignKey(m => m.CuentaId)
-                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

@@ -34,7 +34,6 @@ namespace Microservice.Accounts.Controllers
         public async Task<ActionResult<IEnumerable<Cuenta>>> GetByCliente(int clienteId)
         {
             var cuentas = await _repo.GetCuentasByClienteAsync(clienteId);
-            // always return a list (may be empty)
             return Ok(cuentas);
         }
 

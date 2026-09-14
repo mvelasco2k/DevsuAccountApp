@@ -8,6 +8,5 @@ namespace Microservice.Accounts.Entities
         public DateTime Fecha { get; set; }
         public int CuentaId { get; set; }
         public string? TipoMovimiento { get; set; }
-        public Cuenta? Cuenta { get; set; }
     }
 }

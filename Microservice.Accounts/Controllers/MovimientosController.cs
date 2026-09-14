@@ -5,7 +5,7 @@ using Microservice.Accounts.Repositories;
 namespace Microservice.Accounts.Controllers
 {
     [ApiController]
-    [Route("/movimientos")]
+    [Route("/[controller]")]
     public class MovimientosController : ControllerBase
     {
         private readonly IAccountRepository _repo;
@@ -34,10 +34,10 @@ namespace Microservice.Accounts.Controllers
         }
 
         [HttpGet("by-cuenta/{cuentaId}")]
-        public async Task<IActionResult> GetByCuenta(int cuentaId)
+        public async Task<IActionResult> GetByCuenta(int cuentaId, [FromQuery] DateTime? fechaInicio = null, [FromQuery] DateTime? fechaFin = null)
         {
-            var list = await _repo.GetMovimientosByCuentaAsync(cuentaId);
-            return Ok(list);
+            var result = await _repo.GetMovimientosByCuentaAsync(cuentaId, fechaInicio, fechaFin);
+            return Ok(result);
         }
     }
 }
